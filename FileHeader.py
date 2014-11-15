@@ -143,16 +143,19 @@ def get_strftime():
     return format
 
 
-def get_user():
+def get_user(file_path):
     '''Get user'''
 
     user = getpass.getuser()
+    cwd = os.getcwd()
+    file_dir = os.path.dirname(os.path.realpath(file_path))
+    os.chdir(file_dir)
     status, _ = process.getstatusoutput('git status')
     if status == 0:
         status, output = process.getstatusoutput('git config --get user.name')
         if status == 0 and output:
             user = output
-
+    os.chdir(cwd)
     return user
 
 
@@ -245,7 +248,7 @@ def get_args(syntax_type, options={}):
     if IS_ST3:
         args.update({'project_name': get_project_name()})
 
-    user = get_user()
+    user = get_user(file_path)
     if 'author' not in args:
         args.update({'author': user})
     if 'last_modified_by' not in args:
